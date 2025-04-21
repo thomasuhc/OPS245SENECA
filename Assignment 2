@@ -1,0 +1,55 @@
+#!/bin/bash
+# Author: *** THOMAS CHU ***
+# Date:   *** 02/04/2025 ***
+# OPS245: *** Assignment 2 ***
+
+# Check if fim is installed, and install it if not
+if ! dpkg -l | grep -q fim; then
+    echo "fim is not installed. Installing fim..."
+    sudo apt-get update -qq
+    sudo apt-get install -y fim > /dev/null 2>&1
+    if ! dpkg -l | grep -q fim; then
+        echo "Failed to install fim. Exiting."
+        exit 1
+    fi
+    # Clear the terminal after installation
+    clear
+fi
+
+# Download and unzip the folder with pictures from GitHub
+if [ ! -f fimages.tar ]; then
+    echo "Downloading and unzipping the folder with pictures..."
+    wget https://github.com/thomasuhc/fimages/raw/ab01b7f3e613f3fedd2a9547c2d6c34fc0c0ef6a/fimages.tar > /dev/null 2>&1
+    tar -xvf fimages.tar
+    # Clear the terminal after download and unzip
+    clear
+fi
+
+
+# List of commands
+commands=("ls" "cd" "pwd" "cp" "mv" "rm" "touch" "mkdir" "rmdir" "chmod" "chown" "cat" "echo" "grep" "find" "tar" "zip" "unzip" "df" "du" "ps" "top" "kill" "man" "ssh" "sudo")
+
+while true; do
+    # Prompt the user to enter a command
+    echo "Enter a command from the list below (or type 'exit' to quit):"
+    echo "${commands[@]}" | tr ' ' '\n' | column
+
+    read -p "Command: " user_command
+
+    # Check if the user wants to exit
+    if [[ "$user_command" == "exit" ]]; then
+        echo "Exiting the script. Goodbye!"
+        break
+    fi
+
+    # Check if the entered command is in the list
+    if [[ " ${commands[@]} " =~ " ${user_command} " ]]; then
+        # Generate a random number between 1 and 26
+        random_number=$(shuf -i 1-26 -n 1)
+
+        # Display the random image using fim
+        fim -a /home/$USER/fimages/$(printf "%02d" $random_number).jpg
+    else
+        echo "Invalid command. Please enter a command from the list."
+    fi
+done
