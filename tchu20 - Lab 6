@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# ./pingtest.bash
+# Script to test ping to all hosts on local network
+
+# The local email account to send notifications to
+admin="tchu20"
+
+while read line
+do
+    if echo $line | grep "^192.168.245" >> /dev/null
+    then
+        addr=$(echo $line | cut -f1 -d' ')
+        host=$(echo $line | cut -f2 -d' ')
+        if ping -c1 $addr > /dev/null
+        then
+            echo "$host online"
+        else
+            mail -n -s "Alert: $host offline" $admin <<EOT
+            The virtual machine $host offline, Please hurry up!!!
+        EOT
+            echo "$host offline"
+        fi
+    fi
+done < /etc/hosts
