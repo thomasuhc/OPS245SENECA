@@ -1,0 +1,66 @@
+#!/bin/bash
+# Author: *** THOMAS CHU ***
+# Student number: *** 111543245 ***
+# Date:   *** 27/02/2025 ***
+# OPS245: *** Assignment 1 ***
+
+# The script will ask User to change to Sudo privileges before running the script
+
+user=$(whoami)
+if [ $user != "root" ] # only runs if using sudo or root
+then
+ echo "You must run this script with root privileges. Please use sudo" >&2
+ exit 1
+fi
+
+# The User must pick either A or B option in this part of the script
+
+read -p "Please select a or b (Option a - the user id of a user on the system or Option b - the status of a service provided by the user): " optionab
+
+# If the user doesn't choose either A or B, the program will enter a while loop until they select A or B.
+
+while [ "$optionab" != "a" ] && [ "$optionab" != "b" ]
+do
+    read -p "Please select again the option \"a\" or \"b\": " optionab
+done
+
+# After the user selects option A, they will be prompted to enter a username. If the username exists in the Linux system, a message will be displayed confirming its presence. Otherwise, a message will indicate that the username is not in the system.
+# The option grep -w match all exactly the word source - https://jmcarman.github.io/OPS145/A-Tutorials/tutorial8
+# To get the User ID, look in the lab 4 section"#Temporarily convert spaces to + for storing lines as positional parameters", the ID is located in third field of the line output, using the colon : separate each field
+# The information (grep -w "$sysuser" | cut -d":" -f3 /etc/passwd) in the variable "sysuserid"
+
+
+if [ "$optionab" = "a" ]; then
+
+    read -p "Please enter your username: " sysuser
+
+	# Check if the Username is exists or not in the linux system using grep -w 
+	
+    if grep -w "$sysuser" /etc/passwd; then
+	
+		# Username is exists in the system, extract the Username ID from the /etc/passwd to the variable "sysuserid"
+		# Extract the Username ID from the /etc/passwd, command cut -d":" -f3, the delimiter (-d":") and third field (-f3).
+		
+		sysuserid=$(grep -w "$sysuser" /etc/passwd | cut -d":" -f3 )
+		
+        echo "Your Username is on the system: $sysuser and ID is $sysuserid"
+    else
+        echo "Your Username is NOT on the system: $sysuser"
+    fi
+fi
+
+# After the User selects option B, they will be prompted to enter a Service name. If the Service exists in the Linux system, a message will be displayed the status of the service. Otherwise, a message will indicate that the Service is not found.
+
+if [ "$optionab" = "b" ]; then
+
+    read -p "Please enter service name to check status: " servstatus
+	
+	# If the service exists, shows the status in the screen, if not shows not found
+	
+    systemctl status "$servstatus"
+fi
+
+
+
+
+
